@@ -1,0 +1,177 @@
+2026-05-26 19:35:45 | [32mINFO[0m | conftest.global_logger:46 | ============================================================
+2026-05-26 19:35:45 | [32mINFO[0m | conftest.global_logger:47 | Test session started
+2026-05-26 19:35:45 | [32mINFO[0m | conftest.global_logger:48 | ============================================================
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 200 OK  [4ms, body={"code":200,"data":{"token":"test-token-abc123","username":"admin"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_valid_login_admin:44 | test_valid_login_admin PASSED
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "testuser", "password": "testpass"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 200 OK  [14ms, body={"code":200,"data":{"token":"test-token-abc123","username":"testuser"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "wrongpass"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [5ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [36mDEBUG[0m | test_login.test_wrong_password:79 | 401 returned as expected for wrong password
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "nobody", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_wrong_username:90 | 401 returned for unknown user 'nobody'
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": ""}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_empty_password:101 | 401 returned for empty password
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body=, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 400 BAD REQUEST  [3ms, body=<!doctype html>
+<html lang=en>
+<title>400 Bad Request</title>
+<h1>Bad Request</h1>
+<p>The browser (or proxy) sent a request that this server could not understand.</p>
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_missing_body:122 | Empty body returned 400
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 200 OK  [2ms, body={"code":200,"data":{"token":"test-token-abc123","username":"admin"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:149 |   ✓ valid_admin — login succeeded
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "testuser", "password": "testpass"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 200 OK  [3ms, body={"code":200,"data":{"token":"test-token-abc123","username":"testuser"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:149 |   ✓ valid_testuser — login succeeded
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "wrongpass"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [3ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:154 |   ✓ wrong_password — correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "nobody", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:154 |   ✓ wrong_username — correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [12ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:154 |   ✓ empty_username — correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": ""}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [0ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:154 |   ✓ empty_password — correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:156 | Data-driven login test complete (6 cases)
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 401 UNAUTHORIZED  [0ms, body={"code":401,"data":null,"msg":"Unauthorized"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer bad-f****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 401 UNAUTHORIZED  [1ms, body={"code":401,"data":null,"msg":"Unauthorized"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_with_bad_token:48 | Bad token correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Basic YWRtaW****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Unauthorized"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_with_wrong_scheme:58 | Basic auth scheme correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- POST http://127.0.0.1:5001/api/login  → 200 OK  [2ms, body={"code":200,"data":{"token":"test-token-abc123","username":"admin"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_all_items:75 | All-items query returned 4 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'keyword': 'Apple'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'category': 'fruit'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_filter_by_category:92 | Fruit category returned: {'Banana', 'Apple'}
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'keyword': 'apple'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [4ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [36mDEBUG[0m | test_query.test_query_case_insensitive_keyword:101 | Case-insensitive keyword filter works
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'category': 'ELECTRONICS'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'keyword': 'ZZZNotFound'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_no_match:117 | No-match query correctly returned empty list
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'keyword': 'Banana', 'category': 'fruit'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[{"category":"fruit","id":2,"name":"Banana","price":0.5}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_item_schema:145 | Schema validated for 4 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ all_items_no_filter — 4 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'keyword': 'Apple'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_by_keyword_apple — 1 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'keyword': 'apple'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_by_keyword_case_insensitive — 1 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'category': 'fruit'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_by_category_fruit — 2 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'category': 'electronics'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_by_category_electronics — 1 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'keyword': 'Banana', 'category': 'fruit'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":2,"name":"Banana","price":0.5}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_keyword_and_category — 1 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'keyword': 'NotExist'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ keyword_no_match — 0 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params={'category': 'meat'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ category_no_match — 0 items
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:186 | Data-driven query test complete (8 cases)
+2026-05-26 19:35:47 | [33mWARNING[0m | test_query.test_FAILING_demo_incorrect_item_count:204 | === This test is DESIGNED to fail — demo of log capture ===
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_FAILING_demo_incorrect_item_count:210 | Received 4 items from /api/query
+2026-05-26 19:35:47 | [36mDEBUG[0m | test_query.test_FAILING_demo_incorrect_item_count:211 | Response body: {
+  "code": 200,
+  "data": [
+    {
+      "category": "fruit",
+      "id": 1,
+      "name": "Apple",
+      "price": 1.2
+    },
+    {
+      "category": "fruit",
+      "id": 2,
+      "name": "Banana",
+      "price": 0.5
+    },
+    {
+      "category": "vegetable",
+      "id": 3,
+      "name": "Carrot",
+      "price": 0.8
+    },
+    {
+      "category": "electronics",
+      "id": 4,
+      "name": "Laptop",
+      "price": 999.0
+    }
+  ],
+  "msg": "success"
+}
+2026-05-26 19:35:47 | [31mERROR[0m | test_query.test_FAILING_demo_incorrect_item_count:214 | About to assert 99 items, but only 4 exist!
+2026-05-26 19:35:48 | [32mINFO[0m | http_client._log_info:168 | --> GET http://127.0.0.1:5001/api/health  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:48 | [32mINFO[0m | http_client._log_info:168 | <-- GET http://127.0.0.1:5001/api/health  → 200 OK  [2ms, body={"code":200,"data":{"status":"healthy"},"msg":"ok"}
+]
+2026-05-26 19:35:48 | [32mINFO[0m | test_query.test_health_endpoint:244 | Health check passed
+2026-05-26 19:35:48 | [32mINFO[0m | conftest.global_logger:50 | ============================================================
+2026-05-26 19:35:48 | [32mINFO[0m | conftest.global_logger:51 | Test session ended
+2026-05-26 19:35:48 | [32mINFO[0m | conftest.global_logger:52 | ============================================================

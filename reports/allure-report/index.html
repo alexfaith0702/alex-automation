@@ -1,0 +1,921 @@
+\
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API Automation Test Report</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Helvetica Neue", Arial, sans-serif;
+  background: #f5f6fa; color: #2d3436; line-height: 1.6;
+}
+.header {
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+  color: #fff; padding: 28px 40px;
+}
+.header h1 { font-size: 26px; font-weight: 600; }
+.header .meta { font-size: 14px; opacity: .85; margin-top: 6px; }
+.summary {
+  display: flex; gap: 20px; padding: 24px 40px; flex-wrap: wrap;
+}
+.card {
+  flex: 1; min-width: 140px; background: #fff; border-radius: 12px;
+  padding: 20px 24px; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  text-align: center;
+}
+.card .num { font-size: 36px; font-weight: 700; }
+.card .label { font-size: 13px; color: #636e72; margin-top: 4px;
+  text-transform: uppercase; letter-spacing: .5px; }
+.card.passed .num { color: #00b894; }
+.card.failed .num { color: #d63031; }
+.card.broken .num { color: #e17055; }
+.card.skipped .num { color: #fdcb6e; }
+.card.total .num { color: #6c5ce7; }
+.feature {
+  margin: 0 40px 24px; background: #fff; border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden;
+}
+.feature-head {
+  padding: 16px 24px; background: #f8f9fc; border-bottom: 1px solid #eee;
+  font-size: 17px; font-weight: 600; display: flex; align-items: center; gap: 10px;
+}
+.feature-head .badge {
+  font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500;
+}
+.badge-passed { background: #d5f5e3; color: #00b894; }
+.badge-partial { background: #ffeaa7; color: #d68910; }
+.badge-failed { background: #fadbd8; color: #d63031; }
+.story { margin: 8px 20px 16px; }
+.story-title {
+  font-size: 14px; font-weight: 600; color: #636e72; padding: 8px 4px;
+  border-bottom: 1px dashed #eee; margin-bottom: 8px;
+}
+.test {
+  margin: 6px 0; border: 1px solid #eee; border-radius: 8px; overflow: hidden;
+}
+.test-head {
+  padding: 12px 16px; cursor: pointer; display: flex; align-items: center;
+  gap: 10px; user-select: none;
+}
+.test-head:hover { background: #fafafa; }
+.test-head .icon { font-size: 18px; flex-shrink: 0; }
+.test-head .name { flex: 1; font-size: 14px; font-weight: 500; }
+.test-head .duration { font-size: 12px; color: #888; }
+.test-status-passed .test-head { border-left: 4px solid #00b894; }
+.test-status-failed .test-head { border-left: 4px solid #d63031; background: #fff5f5; }
+.test-status-broken .test-head { border-left: 4px solid #e17055; background: #fff5f0; }
+.test-status-skipped .test-head { border-left: 4px solid #fdcb6e; background: #fffef5; }
+.test-body { display: none; padding: 0 16px 16px; overflow: hidden; }
+.test-body.open { display: block; }
+.steps { list-style: none; margin-top: 8px; }
+.steps li {
+  padding: 8px 12px; margin: 4px 0; border-radius: 6px;
+  font-size: 13px; border-left: 3px solid #ddd;
+}
+.steps li.step-passed { background: #f0fff5; border-color: #00b894; }
+.steps li.step-failed { background: #fff0f0; border-color: #d63031; }
+.steps li.step-broken { background: #fff5f0; border-color: #e17055; }
+.steps li.step-skipped { background: #fefef5; border-color: #fdcb6e; }
+.step-name { font-weight: 500; }
+.step-duration { font-size: 12px; color: #888; margin-left: 8px; }
+.attachments { margin-top: 8px; }
+.attach-item { margin: 6px 0; }
+.attach-toggle {
+  background: #f0f0f5; border: none; padding: 6px 14px; border-radius: 6px;
+  cursor: pointer; font-size: 12px; font-weight: 500; color: #6c5ce7;
+}
+.attach-toggle:hover { background: #e4e4f0; }
+.attach-content {
+  display: none; margin-top: 6px; background: #1e1e2e; color: #cdd6f4;
+  border-radius: 6px; padding: 14px;
+  font-family: "Fira Code","JetBrains Mono","Cascadia Code",Consolas,monospace;
+  font-size: 12px; max-height: 400px; overflow: auto; white-space: pre-wrap;
+  word-break: break-all;
+}
+.attach-content.open { display: block; }
+.error-block {
+  margin: 10px 0; background: #fff0f0; border: 1px solid #fab1a0;
+  border-radius: 8px; overflow: hidden;
+}
+.error-head {
+  background: #d63031; color: #fff; padding: 8px 14px;
+  font-size: 13px; font-weight: 600;
+}
+.error-msg { padding: 10px 14px; font-size: 13px; color: #d63031; }
+.error-trace {
+  padding: 12px 14px; background: #1e1e2e; color: #cdd6f4;
+  font-family: "Fira Code",Consolas,monospace; font-size: 11px;
+  max-height: 300px; overflow: auto; white-space: pre-wrap;
+}
+.description {
+  margin: 8px 0; padding: 10px 14px; background: #f8f9fc;
+  border-radius: 6px; font-size: 13px; color: #636e72;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>API Automation Test Report</h1>
+  <div class="meta">Generated at 2026-05-26 19:35:48 &nbsp;|&nbsp; 22 tests &nbsp;|&nbsp; 0.00s</div>
+</div>
+
+<div class="summary">
+  <div class="card total"><div class="num">22</div><div class="label">Total</div></div>
+  <div class="card passed"><div class="num">21</div><div class="label">Passed</div></div>
+  <div class="card failed"><div class="num">1</div><div class="label">Failed</div></div>
+  <div class="card broken"><div class="num">0</div><div class="label">Broken</div></div>
+  <div class="card skipped"><div class="num">0</div><div class="label">Skipped</div></div>
+</div>
+
+<div class="content">
+<div class="feature">
+<div class="feature-head">Health <span class="badge badge-passed">1/1 passed</span></div>
+<div class="story">
+<div class="story-title">Story: Health check</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_health_endpoint</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">GET /api/health → 200 + 'healthy'.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/health</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Assert healthy</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:48] "GET /api/health HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:48 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/health  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:48 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/health  → 200 OK  [2ms, body={"code":200,"data":{"status":"healthy"},"msg":"ok"}
+]
+2026-05-26 19:35:48 | [32mINFO[0m | test_query.test_health_endpoint:244 | Health check passed
+2026-05-26 19:35:48 | [32mINFO[0m | conftest.global_logger:50 | ============================================================
+2026-05-26 19:35:48 | [32mINFO[0m | conftest.global_logger:51 | Test session ended
+2026-05-26 19:35:48 | [32mINFO[0m | conftest.global_logger:52 | ============================================================
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="feature">
+<div class="feature-head">Login <span class="badge badge-passed">8/8 passed</span></div>
+<div class="story">
+<div class="story-title">Story: Data-driven</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_login_data_driven</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Parameterised test that loops through every case in ``test_data/login_cases.json`` and asserts expected outcome.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">[1/6] Case: valid_admin</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[2/6] Case: valid_testuser</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[3/6] Case: wrong_password</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[4/6] Case: wrong_username</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[5/6] Case: empty_username</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[6/6] Case: empty_password</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "POST /api/login HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "POST /api/login HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 200 OK  [2ms, body={"code":200,"data":{"token":"test-token-abc123","username":"admin"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:149 |   ✓ valid_admin — login succeeded
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "testuser", "password": "testpass"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 200 OK  [3ms, body={"code":200,"data":{"token":"test-token-abc123","username":"testuser"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:149 |   ✓ valid_testuser — login succeeded
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "wrongpass"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [3ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:154 |   ✓ wrong_password — correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "nobody", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:154 |   ✓ wrong_username — correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [12ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:154 |   ✓ empty_username — correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": ""}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [0ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:154 |   ✓ empty_password — correctly rejected
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_login_data_driven:156 | Data-driven login test complete (6 cases)
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="story">
+<div class="story-title">Story: Edge cases</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_missing_body</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Empty POST body → server handles gracefully (400 / 415 / 500).</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">POST /api/login</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 400 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body=, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 400 BAD REQUEST  [3ms, body=&lt;!doctype html&gt;
+&lt;html lang=en&gt;
+&lt;title&gt;400 Bad Request&lt;/title&gt;
+&lt;h1&gt;Bad Request&lt;/h1&gt;
+&lt;p&gt;The browser (or proxy) sent a request that this server could not understand.&lt;/p&gt;
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_missing_body:122 | Empty body returned 400
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="story">
+<div class="story-title">Story: Invalid credentials</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_empty_password</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Empty password → 401.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">POST /api/login</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": ""}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_empty_password:101 | 401 returned for empty password
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_empty_username</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Empty username → 401.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">POST /api/login</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_wrong_password</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Correct username but wrong password → 401.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">POST /api/login with wrong password</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Assert 401 response</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "wrongpass"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [5ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [36mDEBUG[0m | test_login.test_wrong_password:79 | 401 returned as expected for wrong password
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_wrong_username</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Non‑existent username → 401.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">POST /api/login</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mPOST /api/login HTTP/1.1[0m" 401 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "nobody", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Invalid credentials"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_wrong_username:90 | 401 returned for unknown user 'nobody'
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="story">
+<div class="story-title">Story: Valid credentials</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_valid_login_admin</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Verify that a registered user can log in and receive a valid token.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">POST /api/login as admin</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Assert response structure</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5001
+[32mINFO    [0m werkzeug:_internal.py:97 [33mPress CTRL+C to quit[0m
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "POST /api/login HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:45 | [32mINFO[0m | conftest.global_logger:46 | ============================================================
+2026-05-26 19:35:45 | [32mINFO[0m | conftest.global_logger:47 | Test session started
+2026-05-26 19:35:45 | [32mINFO[0m | conftest.global_logger:48 | ============================================================
+ * Serving Flask app 'app'
+ * Debug mode: off
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 200 OK  [4ms, body={"code":200,"data":{"token":"test-token-abc123","username":"admin"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_login.test_valid_login_admin:44 | test_valid_login_admin PASSED
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_valid_login_testuser</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">testuser / testpass → 200 + token.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">POST /api/login as testuser</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Assert username is correct</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "POST /api/login HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "testuser", "password": "testpass"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 200 OK  [14ms, body={"code":200,"data":{"token":"test-token-abc123","username":"testuser"},"msg":"success"}
+]
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="feature">
+<div class="feature-head">QueryItems <span class="badge badge-failed">12/13 passed</span></div>
+<div class="story">
+<div class="story-title">Story: Authorization</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_with_bad_token</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Wrong Bearer token → 401.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mGET /api/query HTTP/1.1[0m" 401 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer bad-f****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 401 UNAUTHORIZED  [1ms, body={"code":401,"data":null,"msg":"Unauthorized"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_with_bad_token:48 | Bad token correctly rejected
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_with_wrong_scheme</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Non‑Bearer auth → 401.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mGET /api/query HTTP/1.1[0m" 401 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Basic YWRtaW****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 401 UNAUTHORIZED  [2ms, body={"code":401,"data":null,"msg":"Unauthorized"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_with_wrong_scheme:58 | Basic auth scheme correctly rejected
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_without_token_returns_401</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Requests without a valid Bearer token must be rejected with 401.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query without Authorization header</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Assert 401</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mGET /api/query HTTP/1.1[0m" 401 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 401 UNAUTHORIZED  [0ms, body={"code":401,"data":null,"msg":"Unauthorized"}
+]
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="story">
+<div class="story-title">Story: Data-driven query</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_data_driven</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Uses ``test_data/query_cases.json`` to drive multiple filter combinations.  Each JSON case declares expected count and optional expected item names.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">[1/8] Case: all_items_no_filter</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[2/8] Case: filter_by_keyword_apple</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[3/8] Case: filter_by_keyword_case_insensitive</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[4/8] Case: filter_by_category_fruit</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[5/8] Case: filter_by_category_electronics</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[6/8] Case: filter_keyword_and_category</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[7/8] Case: keyword_no_match</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">[8/8] Case: category_no_match</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?keyword=Apple HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?keyword=apple HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?category=fruit HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?category=electronics HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?keyword=Banana&amp;category=fruit HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?keyword=NotExist HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?category=meat HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ all_items_no_filter — 4 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'keyword': 'Apple'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_by_keyword_apple — 1 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'keyword': 'apple'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_by_keyword_case_insensitive — 1 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'category': 'fruit'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_by_category_fruit — 2 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'category': 'electronics'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_by_category_electronics — 1 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'keyword': 'Banana', 'category': 'fruit'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":2,"name":"Banana","price":0.5}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ filter_keyword_and_category — 1 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'keyword': 'NotExist'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ keyword_no_match — 0 items
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'category': 'meat'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:184 |   ✓ category_no_match — 0 items
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_data_driven:186 | Data-driven query test complete (8 cases)
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="story">
+<div class="story-title">Story: Negative demo</div>
+<div class="test test-status-failed">
+<div class="test-head"><span class="icon">FAIL</span><span class="name">test_FAILING_demo_incorrect_item_count</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">**This test is designed to FAIL.**
+
+It intentionally makes a wrong assertion (expecting 99 items when only 4 exist) to demonstrate:
+- Full request / response log captured in the Allure report
+- Execution log with DEBUG-level detail of every HTTP call
+- The exact assertion error message + stack trace
+
+Remove this test in production.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">Step 1 — Send valid query</span><span class="step-duration"></span></li>
+<li class="step-failed"><span class="step-name">Step 2 — Make WRONG assertion (expect 99, have 4)</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">Execution Log</button>
+<div class="attach-content">2026-05-26 19:35:47 | [33mWARNING[0m | test_query.test_FAILING_demo_incorrect_item_count:204 | === This test is DESIGNED to fail — demo of log capture ===
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_FAILING_demo_incorrect_item_count:210 | Received 4 items from /api/query
+2026-05-26 19:35:47 | [36mDEBUG[0m | test_query.test_FAILING_demo_incorrect_item_count:211 | Response body: {
+  "code": 200,
+  "data": [
+    {
+      "category": "fruit",
+      "id": 1,
+      "name": "Apple",
+      "price": 1.2
+    },
+    {
+      "category": "fruit",
+      "id": 2,
+      "name": "Banana",
+      "price": 0.5
+    },
+    {
+      "category": "vegetable",
+      "id": 3,
+      "name": "Carrot",
+      "price": 0.8
+    },
+    {
+      "category": "electronics",
+      "id": 4,
+      "name": "Laptop",
+      "price": 999.0
+    }
+  ],
+  "msg": "success"
+}
+2026-05-26 19:35:47 | [31mERROR[0m | test_query.test_FAILING_demo_incorrect_item_count:214 | About to assert 99 items, but only 4 exist!</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">Test Description</button>
+<div class="attach-content">[DEMO] Intentional wrong assertion to show failure logging.</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [33mWARNING[0m | test_query.test_FAILING_demo_incorrect_item_count:204 | === This test is DESIGNED to fail — demo of log capture ===
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_FAILING_demo_incorrect_item_count:210 | Received 4 items from /api/query
+2026-05-26 19:35:47 | [36mDEBUG[0m | test_query.test_FAILING_demo_incorrect_item_count:211 | Response body: {
+  "code": 200,
+  "data": [
+    {
+      "category": "fruit",
+      "id": 1,
+      "name": "Apple",
+      "price": 1.2
+    },
+    {
+      "category": "fruit",
+      "id": 2,
+      "name": "Banana",
+      "price": 0.5
+    },
+    {
+      "category": "vegetable",
+      "id": 3,
+      "name": "Carrot",
+      "price": 0.8
+    },
+    {
+      "category": "electronics",
+      "id": 4,
+      "name": "Laptop",
+      "price": 999.0
+    }
+  ],
+  "msg": "success"
+}
+2026-05-26 19:35:47 | [31mERROR[0m | test_query.test_FAILING_demo_incorrect_item_count:214 | About to assert 99 items, but only 4 exist!
+</div>
+</div>
+</div>
+<div class="error-block">
+<div class="error-head">Failure Details</div>
+<div class="error-msg">AssertionError: [EXPECTED FAILURE] The API returned 4 items but we (wrongly) expected 99.  This is a demo.
+assert 4 == 99</div>
+<div class="error-trace">self = &lt;test_api.test_query.TestQuery object at 0x00000168E14D9C10&gt;
+auth_client = &lt;common.http_client.HttpClient object at 0x00000168E3497350&gt;
+
+    @allure.story("Negative demo")
+    @allure.severity(allure.severity_level.MINOR)
+    @allure.description(
+        "**This test is designed to FAIL.**\n\n"
+        "It intentionally makes a wrong assertion (expecting 99 items "
+        "when only 4 exist) to demonstrate:\n"
+        "- Full request / response log captured in the Allure report\n"
+        "- Execution log with DEBUG-level detail of every HTTP call\n"
+        "- The exact assertion error message + stack trace\n\n"
+        "Remove this test in production."
+    )
+    def test_FAILING_demo_incorrect_item_count(self, auth_client):
+        """[DEMO] Intentional wrong assertion to show failure logging."""
+        log.warning("=== This test is DESIGNED to fail — demo of log capture ===")
+    
+        with allure.step("Step 1 — Send valid query"):
+            resp = auth_client.get("/api/query")
+            body = resp.json()
+            actual_count = len(body["data"])
+            log.info(f"Received {actual_count} items from /api/query")
+            log.debug(f"Response body: {json.dumps(body, indent=2)}")
+    
+        with allure.step("Step 2 — Make WRONG assertion (expect 99, have 4)"):
+            log.error(f"About to assert 99 items, but only {actual_count} exist!")
+            # 👇 This assertion intentionally fails
+&gt;           assert actual_count == 99, (
+                f"[EXPECTED FAILURE] The API returned {actual_count} items "
+                f"but we (wrongly) expected 99.  This is a demo."
+            )
+E           AssertionError: [EXPECTED FAILURE] The API returned 4 items but we (wrongly) expected 99.  This is a demo.
+E           assert 4 == 99
+
+test_api\test_query.py:216: AssertionError</div>
+</div>
+</div>
+</div>
+</div>
+<div class="story">
+<div class="story-title">Story: Query with valid token</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_all_items</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">No filters → returns all 4 items.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query (no params)</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Assert 4 items returned</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "POST /api/login HTTP/1.1" 200 -
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; POST http://127.0.0.1:5001/api/login  [params=, body={"username": "admin", "password": "password123"}, headers={'Content-Type': 'application/json'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- POST http://127.0.0.1:5001/api/login  → 200 OK  [2ms, body={"code":200,"data":{"token":"test-token-abc123","username":"admin"},"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_all_items:75 | All-items query returned 4 items
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_case_insensitive_category</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">category=ELECTRONICS (uppercase) still matches.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?category=ELECTRONICS HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'category': 'ELECTRONICS'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_case_insensitive_keyword</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">keyword=apple (lowercase) still matches 'Apple'.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?keyword=apple HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'keyword': 'apple'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [4ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [36mDEBUG[0m | test_query.test_query_case_insensitive_keyword:101 | Case-insensitive keyword filter works
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_combined_filters</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">keyword + category together.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?keyword=Banana&amp;category=fruit HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'keyword': 'Banana', 'category': 'fruit'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[{"category":"fruit","id":2,"name":"Banana","price":0.5}],"msg":"success"}
+]
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_filter_by_category</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">category=fruit → Apple + Banana.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?category=fruit HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'category': 'fruit'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_filter_by_category:92 | Fruit category returned: {'Banana', 'Apple'}
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_filter_by_keyword</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">keyword=Apple → 1 item named 'Apple'.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?keyword=Apple HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'keyword': 'Apple'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [0ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2}],"msg":"success"}
+]
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_query_no_match</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Non‑matching keyword → empty list.</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query?keyword=ZZZNotFound HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params={'keyword': 'ZZZNotFound'}, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [3ms, body={"code":200,"data":[],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_query_no_match:117 | No-match query correctly returned empty list
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="story">
+<div class="story-title">Story: Response schema</div>
+<div class="test test-status-passed">
+<div class="test-head"><span class="icon">PASS</span><span class="name">test_item_schema</span><span class="duration"></span></div>
+<div class="test-body">
+<div class="description">Every item must have id(int), name(str), category(str), price(number).</div>
+<ul class="steps">
+<li class="step-passed"><span class="step-name">GET /api/query</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Validate schema of item id=1</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Validate schema of item id=2</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Validate schema of item id=3</span><span class="step-duration"></span></li>
+<li class="step-passed"><span class="step-name">Validate schema of item id=4</span><span class="step-duration"></span></li>
+</ul>
+<div class="attachments">
+<div class="attach-item">
+<button class="attach-toggle">log</button>
+<div class="attach-content">[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "GET /api/query HTTP/1.1" 200 -</div>
+</div>
+<div class="attach-item">
+<button class="attach-toggle">stdout</button>
+<div class="attach-content">2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | --&gt; GET http://127.0.0.1:5001/api/query  [params=, body=None, headers={'Content-Type': 'application/json', 'Authorization': 'Bearer test-****'}]
+2026-05-26 19:35:47 | [32mINFO[0m | http_client._log_info:168 | &lt;-- GET http://127.0.0.1:5001/api/query  → 200 OK  [2ms, body={"code":200,"data":[{"category":"fruit","id":1,"name":"Apple","price":1.2},{"category":"fruit","id":2,"name":"Banana","price":0.5},{"category":"vegetable","id":3,"name":"Carrot","price":0.8},{"category":"electronics","id":4,"name":"Laptop","price":999.0}],"msg":"success"}
+]
+2026-05-26 19:35:47 | [32mINFO[0m | test_query.test_item_schema:145 | Schema validated for 4 items
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded",function(){
+  document.querySelectorAll(".test-head").forEach(function(h){
+    h.addEventListener("click",function(){
+      this.parentElement.querySelector(".test-body").classList.toggle("open");
+    });
+  });
+  document.querySelectorAll(".attach-toggle").forEach(function(b){
+    b.addEventListener("click",function(e){
+      e.stopPropagation();
+      this.nextElementSibling.classList.toggle("open");
+    });
+  });
+  document.querySelectorAll(".test-status-failed .test-body,.test-status-broken .test-body")
+    .forEach(function(b){b.classList.add("open");});
+});
+</script>
+</body>
+</html>

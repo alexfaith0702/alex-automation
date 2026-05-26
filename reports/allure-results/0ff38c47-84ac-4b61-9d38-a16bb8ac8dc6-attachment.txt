@@ -1,0 +1,1 @@
+[32mINFO    [0m werkzeug:_internal.py:97 127.0.0.1 - - [26/May/2026 19:35:47] "[31m[1mGET /api/query HTTP/1.1[0m" 401 -
