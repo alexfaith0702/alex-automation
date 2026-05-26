@@ -1,0 +1,55 @@
+[
+  {
+    "name": "all_items_no_filter",
+    "keyword": "",
+    "category": "",
+    "expect_count": 4
+  },
+  {
+    "name": "filter_by_keyword_apple",
+    "keyword": "Apple",
+    "category": "",
+    "expect_count": 1,
+    "expect_names": ["Apple"]
+  },
+  {
+    "name": "filter_by_keyword_case_insensitive",
+    "keyword": "apple",
+    "category": "",
+    "expect_count": 1,
+    "expect_names": ["Apple"]
+  },
+  {
+    "name": "filter_by_category_fruit",
+    "keyword": "",
+    "category": "fruit",
+    "expect_count": 2,
+    "expect_names": ["Apple", "Banana"]
+  },
+  {
+    "name": "filter_by_category_electronics",
+    "keyword": "",
+    "category": "electronics",
+    "expect_count": 1,
+    "expect_names": ["Laptop"]
+  },
+  {
+    "name": "filter_keyword_and_category",
+    "keyword": "Banana",
+    "category": "fruit",
+    "expect_count": 1,
+    "expect_names": ["Banana"]
+  },
+  {
+    "name": "keyword_no_match",
+    "keyword": "NotExist",
+    "category": "",
+    "expect_count": 0
+  },
+  {
+    "name": "category_no_match",
+    "keyword": "",
+    "category": "meat",
+    "expect_count": 0
+  }
+]

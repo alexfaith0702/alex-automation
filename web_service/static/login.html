@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Login</title></head>
+<body>
+    <h2>Login Page</h2>
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username">
+    </div>
+    <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+    </div>
+    <button id="login-btn" onclick="login()">Login</button>
+    <p id="message" style="color: red;"></p>
+
+    <script>
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const msgEle = document.getElementById('message');
+
+            fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('username', data.data.username);
+                    msgEle.style.color = 'green';
+                    msgEle.innerText = 'Login successful! Redirecting...';
+                    setTimeout(() => { window.location.href = '/query'; }, 500);
+                } else {
+                    msgEle.innerText = data.msg;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

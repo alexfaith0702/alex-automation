@@ -1,0 +1,38 @@
+[
+  {
+    "name": "valid_admin",
+    "username": "admin",
+    "password": "password123",
+    "expect_success": true
+  },
+  {
+    "name": "valid_testuser",
+    "username": "testuser",
+    "password": "testpass",
+    "expect_success": true
+  },
+  {
+    "name": "wrong_password",
+    "username": "admin",
+    "password": "wrongpass",
+    "expect_success": false
+  },
+  {
+    "name": "wrong_username",
+    "username": "nobody",
+    "password": "password123",
+    "expect_success": false
+  },
+  {
+    "name": "empty_username",
+    "username": "",
+    "password": "password123",
+    "expect_success": false
+  },
+  {
+    "name": "empty_password",
+    "username": "admin",
+    "password": "",
+    "expect_success": false
+  }
+]

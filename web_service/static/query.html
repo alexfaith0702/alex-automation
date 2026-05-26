@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Query Dashboard</title></head>
+<body>
+    <h2>Query Dashboard</h2>
+    <p>Welcome, <span id="user-display"></span>! <button id="logout-btn" onclick="logout()">Logout</button></p>
+    
+    <div>
+        <label for="keyword">Keyword:</label>
+        <input type="text" id="keyword" name="keyword">
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+            <option value="">All</option>
+            <option value="fruit">Fruit</option>
+            <option value="electronics">Electronics</option>
+        </select>
+        <button id="query-btn" onclick="queryData()">Search</button>
+    </div>
+
+    <h3>Results:</h3>
+    <table border="1" id="result-table" style="display:none;">
+        <thead><tr><th>ID</th><th>Name</th><th>Category</th><th>Price</th></tr></thead>
+        <tbody id="result-body"></tbody>
+    </table>
+    <p id="no-result" style="display:none;">No data found.</p>
+
+    <script>
+        window.onload = function() {
+            const token = localStorage.getItem('token');
+            const username = localStorage.getItem('username');
+            if (!token) { window.location.href = '/login'; return; }
+            document.getElementById('user-display').innerText = username || 'User';
+        };
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/login';
+        }
+
+        function queryData() {
+            const token = localStorage.getItem('token');
+            const keyword = document.getElementById('keyword').value;
+            const category = document.getElementById('category').value;
+            let url = `/api/query?keyword=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}`;
+            
+            fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === 200) {
+                    const tbody = document.getElementById('result-body');
+                    tbody.innerHTML = '';
+                    const table = document.getElementById('result-table');
+                    const noResult = document.getElementById('no-result');
+                    
+                    if (data.data.length === 0) {
+                        table.style.display = 'none'; noResult.style.display = 'block';
+                    } else {
+                        table.style.display = 'table'; noResult.style.display = 'none';
+                        data.data.forEach(item => {
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `<td>${item.id}</td><td>${item.name}</td><td>${item.category}</td><td>${item.price}</td>`;
+                            tbody.appendChild(tr);
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
